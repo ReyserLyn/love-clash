@@ -1,0 +1,64 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"indentWidth": 2,
+		"lineWidth": 80,
+		"formatWithErrors": true
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"jsxQuoteStyle": "single",
+			"trailingCommas": "es5",
+			"semicolons": "always",
+			"arrowParentheses": "always"
+		}
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"a11y": {
+				"recommended": true,
+				"useButtonType": "error",
+				"useKeyWithClickEvents": "error",
+				"useValidAnchor": "error"
+			},
+			"security": {
+				"recommended": true,
+				"noDangerouslySetInnerHtml": "error"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "off",
+				"noExplicitAny": "error"
+			},
+			"style": {
+				"noDefaultExport": "off",
+				"useImportType": "error"
+			}
+		}
+	},
+	"files": {
+		"includes": [
+			"**",
+			"!**/node_modules/**",
+			"!**/dist/**",
+			"!public/**",
+			"!**/.vscode/**",
+			"!**/.git/**",
+			"!src-tauri/**",
+			"!pocketbase/**",
+			"!src/routeTree.gen.ts"
+		],
+		"ignoreUnknown": false
+	}
+}

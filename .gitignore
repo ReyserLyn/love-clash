@@ -23,5 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+.env
+.env.local
 
-pocketbase/
+/pocketbase
+
+.tanstack/
+
+/src/legacy/
