@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 
-pocketbase.exe
+pocketbase/
