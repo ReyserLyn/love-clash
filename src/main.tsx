@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/globals.css';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { Toaster } from '@/components/ui/sonner';
 import { ReactQueryProvider } from './providers/react-query';
 import { routeTree } from './routeTree.gen';
 
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 		<ReactQueryProvider>
 			<div className='container font-host'>
 				<RouterProvider router={router} />
+				<Toaster position='top-center' richColors offset={16} />
 			</div>
 		</ReactQueryProvider>
 	</React.StrictMode>
