@@ -17,7 +17,7 @@ declare module '@tanstack/react-router' {
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
 		<ReactQueryProvider>
-			<div className='container font-host'>
+			<div className='font-host'>
 				<RouterProvider router={router} />
 				<Toaster position='top-center' richColors offset={16} />
 			</div>

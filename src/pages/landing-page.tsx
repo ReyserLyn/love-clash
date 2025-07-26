@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 export default function LandingPage() {
 	return (
-		<div className='bg flex flex-col items-center justify-center h-[100dvh]'>
+		<section className='container flex flex-col items-center justify-center h-[100dvh]'>
 			<div className='h-[80%] flex flex-col items-center justify-center gap-10'>
 				<div className='text-center font-potta flex flex-col gap-2 relative'>
 					<h1 className='text-4xl font-bold  text-primary'>LOVE VS</h1>
@@ -37,6 +37,6 @@ export default function LandingPage() {
 					</Link>
 				</Button>
 			</div>
-		</div>
+		</section>
 	);
 }

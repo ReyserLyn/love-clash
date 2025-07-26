@@ -1,13 +1,18 @@
-import { createFileRoute } from '@tanstack/react-router';
-import HomePage from '@/pages/home-page';
-import LandingPage from '@/pages/landing-page';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useAuthStore } from '@/stores/auth';
 
 export const Route = createFileRoute('/')({
-	component: Index,
+	beforeLoad: () => {
+		const { user } = useAuthStore.getState();
+		if (user) {
+			throw redirect({
+				to: '/home',
+			});
+		} else {
+			throw redirect({
+				to: '/landing',
+			});
+		}
+	},
+	component: () => null,
 });
-
-function Index() {
-	const { user } = useAuthStore();
-	return user ? <HomePage /> : <LandingPage />;
-}

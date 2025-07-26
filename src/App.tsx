@@ -1,8 +1,14 @@
-import Home from '@/legacy/home-page';
-import Landing from '@/pages/landing-page';
-import { useAuthStore } from '@/stores/auth';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { routeTree } from './routeTree.gen';
+
+const router = createRouter({ routeTree });
+
+declare module '@tanstack/react-router' {
+	interface Register {
+		router: typeof router;
+	}
+}
 
 export default function App() {
-	const { user } = useAuthStore();
-	return user ? <Home /> : <Landing />;
+	return <RouterProvider router={router} />;
 }

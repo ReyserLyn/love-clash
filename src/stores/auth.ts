@@ -1,6 +1,7 @@
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { create } from 'zustand';
 import type { User } from '@/interfaces';
+import pb from '@/lib/pocketbase/database';
 
 const store = new LazyStore('auth.json');
 
@@ -34,6 +35,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 		await store.clear();
 		await store.save();
 		set({ user: null, token: null });
+		pb.authStore.clear();
 	},
 }));
 
