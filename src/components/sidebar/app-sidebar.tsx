@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 									alt='logo'
 									className='w-4'
 								/>
-								<span className='text-base font-potta'>Love Notes</span>
+								<span className='text-base font-potta'>Love Clash</span>
 							</div>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

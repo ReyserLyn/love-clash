@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_app')({
 									alt='logo'
 									className='w-4'
 								/>
-								<span>Love Notes</span>
+								<span>Love Clash</span>
 							</div>
 						</header>
 

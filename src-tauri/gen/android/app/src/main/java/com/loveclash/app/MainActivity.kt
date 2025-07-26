@@ -1,4 +1,4 @@
-package com.love_vs.app
+package com.loveclash.app
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
