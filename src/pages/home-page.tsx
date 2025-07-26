@@ -1,16 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCallback, useEffect, useState } from 'react';
+import LoveList from '@/components/love/love-list';
 import { useLoveCounts } from '@/hooks/useLoveCounts';
+import type { LoveCountItem } from '@/interfaces/love-count';
 import pb from '@/lib/pocketbase/database';
 import { useAuthStore } from '@/stores/auth';
-
-type LoveCountItem = {
-	id: string;
-	userId: string;
-	name: string;
-	count: number;
-};
 
 export default function HomePage() {
 	const { user } = useAuthStore();
@@ -18,7 +12,20 @@ export default function HomePage() {
 	const currentUserId = user?.id;
 	const queryClient = useQueryClient();
 
-	// 1) Suscripción real‑time solo para confirmar avances
+	const [animatingCounts, setAnimatingCounts] = useState(new Set<string>());
+	const [pendingUpdates, setPendingUpdates] = useState(new Set<string>());
+
+	const triggerAnimation = useCallback((id: string) => {
+		setAnimatingCounts((prev) => new Set(prev).add(id));
+		setTimeout(() => {
+			setAnimatingCounts((prev) => {
+				const next = new Set(prev);
+				next.delete(id);
+				return next;
+			});
+		}, 350);
+	}, []);
+
 	useEffect(() => {
 		if (!coupleId) return;
 
@@ -34,27 +41,35 @@ export default function HomePage() {
 					old?.map((u) => {
 						if (u.id !== e.record.id) return u;
 						const serverCount = e.record.count ?? u.count;
-						// Solo actualizo si el serverCount es mayor:
-						return serverCount > u.count ? { ...u, count: serverCount } : u;
+						if (serverCount > u.count) {
+							triggerAnimation(u.id);
+							return { ...u, count: serverCount };
+						}
+						return u;
 					}) ?? []
 			);
+
+			setPendingUpdates((prev) => {
+				const next = new Set(prev);
+				next.delete(e.record.id);
+				return next;
+			});
 		};
 
 		pb.collection('love_counts').subscribe('*', handler);
 		return () => {
-			pb.collection('love_counts').unsubscribe('*');
+			void pb.collection('love_counts').unsubscribe('*');
 		};
-	}, [coupleId, currentUserId, queryClient]);
+	}, [coupleId, currentUserId, queryClient, triggerAnimation]);
 
-	// 2) Fetch con React Query
 	const { data: loveCounts = [], isLoading } = useLoveCounts(
 		coupleId,
 		currentUserId
 	);
+
 	if (isLoading) return <p className='text-center'>Cargando...</p>;
 
-	// 3) Formateo y orden
-	const formatted: LoveCountItem[] = loveCounts
+	const formatted = loveCounts
 		.map((item) => ({
 			id: item.id,
 			userId: item.expand.user.id,
@@ -65,69 +80,50 @@ export default function HomePage() {
 			a.userId === currentUserId ? 1 : b.userId === currentUserId ? -1 : 0
 		);
 
-	// 4) Optimistic update + PATCH
-	const addLove = async (loveCountId: string) => {
+	const handleCardClick = async (id: string) => {
 		let newCount = 0;
-		// 4.1) Optimistic update
 		queryClient.setQueryData<LoveCountItem[]>(
 			['love-counts', coupleId, currentUserId],
 			(old) =>
 				old?.map((u) => {
-					if (u.id === loveCountId) {
+					if (u.id === id) {
 						newCount = u.count + 1;
 						return { ...u, count: newCount };
 					}
 					return u;
 				}) ?? []
 		);
+		triggerAnimation(id);
+		setPendingUpdates((prev) => new Set(prev).add(id));
 
-		// 4.2) Patch real
 		try {
-			await pb
-				.collection('love_counts')
-				.update(loveCountId, { count: newCount });
-		} catch (error) {
-			console.error('Error al añadir amor:', error);
-			// 4.3) Revertir si falla
+			await pb.collection('love_counts').update(id, { count: newCount });
+		} catch (err) {
+			console.error('Error al añadir amor:', err);
 			queryClient.invalidateQueries({
 				queryKey: ['love-counts', coupleId, currentUserId],
+			});
+			setPendingUpdates((prev) => {
+				const next = new Set(prev);
+				next.delete(id);
+				return next;
 			});
 		}
 	};
 
-	// 5) Render
 	return (
-		<section className='flex flex-col items-center py-8 h-full gap-10'>
+		<section className='flex flex-col items-center py-8 h-full gap-8'>
 			<h1 className='text-3xl text-primary font-potta text-center'>
 				¿Quién ama más a quién?
 			</h1>
 
-			{formatted.map((u) => {
-				const isMe = u.userId === currentUserId;
-				return (
-					<Card
-						key={u.id}
-						className={`w-full max-w-md py-12 hover:cursor-pointer ${
-							isMe ? 'hover:bg-pink-50' : ''
-						}`}
-						onClick={() => isMe && addLove(u.id)}
-					>
-						<CardHeader>
-							<CardTitle>
-								<h2 className='text-3xl font-bold text-center'>{u.name}</h2>
-								<div className='flex flex-col items-center gap-2 justify-center mt-2 relative'>
-									<img
-										src='/assets/corazon.svg'
-										alt='corazón'
-										className='max-w-40 animate-pulse'
-									/>
-									<p className='text-3xl font-bold absolute'>{u.count}</p>
-								</div>
-							</CardTitle>
-						</CardHeader>
-					</Card>
-				);
-			})}
+			<LoveList
+				users={formatted}
+				currentUserId={currentUserId}
+				animatingCounts={animatingCounts}
+				pendingUpdates={pendingUpdates}
+				onClick={handleCardClick}
+			/>
 		</section>
 	);
 }
