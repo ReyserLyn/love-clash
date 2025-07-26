@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import type { User } from '@/interfaces';
+import type { UsersResponse } from '@/interfaces/pocketbase-types';
 import pb from '@/lib/pocketbase/database';
 import { useAuthStore } from '@/stores/auth';
 
@@ -18,7 +18,7 @@ export function useAuth() {
 				.collection('users')
 				.authWithPassword(email, password, { requestKey: null });
 
-			const user = res.record as User;
+			const user = res.record as UsersResponse;
 			const token = pb.authStore.token;
 
 			await setAuth(user, token);

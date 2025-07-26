@@ -1,14 +1,14 @@
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { create } from 'zustand';
-import type { User } from '@/interfaces';
+import type { UsersResponse } from '@/interfaces/pocketbase-types';
 import pb from '@/lib/pocketbase/database';
 
 const store = new LazyStore('auth.json');
 
 interface AuthState {
-	user: User | null;
+	user: UsersResponse | null;
 	token: string | null;
-	setAuth: (user: User, token: string) => Promise<void>;
+	setAuth: (user: UsersResponse, token: string) => Promise<void>;
 	restoreAuth: () => Promise<void>;
 	logout: () => Promise<void>;
 }
@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 	},
 
 	async restoreAuth() {
-		const user = await store.get<User>('user');
+		const user = await store.get<UsersResponse>('user');
 		const token = await store.get<string>('token');
 
 		set({ user: user ?? null, token: token ?? null });
