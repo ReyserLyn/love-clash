@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import {
 	SidebarInset,
@@ -8,6 +8,12 @@ import {
 import { useAuthStore } from '@/stores/auth';
 
 export const Route = createFileRoute('/_app')({
+	beforeLoad: async () => {
+		const { user } = useAuthStore.getState();
+		if (!user) {
+			throw redirect({ to: '/landing' });
+		}
+	},
 	component: () => {
 		const { user } = useAuthStore();
 		if (!user) return null;
