@@ -33,3 +33,5 @@ dist-ssr
 /src/legacy/
 
 /brand/
+
+/src-tauri/gen/android/keystore.properties
