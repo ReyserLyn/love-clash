@@ -31,7 +31,7 @@ export function NavUser({
 	const handleLogout = () => {
 		document.body.style.pointerEvents = 'auto';
 		logout();
-		navigate({ to: '/' });
+		navigate({ to: '/landing' });
 	};
 
 	const handleMyAccount = () => {
