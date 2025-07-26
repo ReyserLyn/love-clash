@@ -28,6 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 	async restoreAuth() {
 		const user = await store.get<User>('user');
 		const token = await store.get<string>('token');
+
 		set({ user: user ?? null, token: token ?? null });
 	},
 
