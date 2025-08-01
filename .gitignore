@@ -29,6 +29,7 @@ dist-ssr
 /pocketbase
 
 .tanstack/
+.cursor/
 
 /src/legacy/
 
